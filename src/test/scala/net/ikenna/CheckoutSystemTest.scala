@@ -6,24 +6,44 @@ class CheckoutSystemTest extends FreeSpec with Matchers {
 
   "Checkout System" - {
 
-    "should have a total of zero when empty" in {
-      CheckoutSystem.getTotal() should be(0)
+    "with no offers" - {
+
+      val noOffers = Nil
+
+      "should have a total of zero when empty" in {
+        CheckoutSystem.getTotal(noOffers)("") should be(0)
+      }
+
+      "should give a total of 60p for 1 apple" in {
+        CheckoutSystem.getTotal(noOffers)("Apple") should be(60)
+      }
+
+      "should give a total of 25p for 1 orange" in {
+        CheckoutSystem.getTotal(noOffers)("Orange") should be(25)
+      }
+
+      "should give a total of 180p for 3 apples" in {
+        CheckoutSystem.getTotal(noOffers)("Apple Apple Apple") should be(180)
+      }
+
+      "should give a total of 205p for input 'Apple, Apple, Orange, Apple' " in {
+        CheckoutSystem.getTotal(noOffers)("Apple Apple Orange Apple ") should be(205)
+      }
+
     }
 
-    "should give a total of 60p for 1 apple" in {
-      CheckoutSystem.getTotal("Apple") should be(60)
-    }
+    "with offers" - {
 
-    "should give a total of 25p for 1 orange" in {
-      CheckoutSystem.getTotal("Orange") should be(25)
-    }
+      val offers = AllOffers()
 
-    "should give a total of 120p for 2 apples" in {
-      CheckoutSystem.getTotal("Apple Apple") should be(120)
-    }
+      "should get one free Apple for one purchased Apple" in {
+        CheckoutSystem.getTotal(offers)("Apple Apple") should be(60)
+      }
 
-    "should give a total of 205p for input 'Apple, Apple, Orange, Apple' " in {
-      CheckoutSystem.getTotal("Apple Apple Orange Apple ") should be(205)
+      "should pay 50p for 3 oranges" in {
+        CheckoutSystem.getTotal(offers)("Orange Orange Orange") should be(50)
+      }
     }
   }
+
 }
